@@ -2,13 +2,14 @@ class Card:
     #Construtor da classe carta
     #name: , strength: força de hit, constitution: vida base, cost: custo de ação, type: carta, feitiço, equiṕamento, terreno
     
-    def __init__(self, name, strength, constitution, cost, type, tags):
+    def __init__(self, name, strength, constitution, cost, card_type, tags, board_position=None):
         self.name = name
         self.str = strength
         self.con = constitution
         self.cost = cost
         self.type = card_type
         self.tags = tags if tags else []
+        self.board_position = board_position
         
         self.board_position = None
         self.health = constitution
@@ -16,7 +17,7 @@ class Card:
     
     # jogar no tabuleiro
     def place_on_board(self, board_position, owner):
-        self.board_positiom = position
+        self.board_positiom = board_position
         self.owner = owner
     
     
@@ -39,7 +40,7 @@ class Card:
     def die(self):
         print(f"{self.name} is destroied and off the board.")
         self.board_position = None
-        move_to_graveyard(self)
+        self.move_to_graveyard(self)
         
     # mover para o cemiterio
     def move_to_graveyard(self):
