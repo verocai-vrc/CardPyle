@@ -4,10 +4,10 @@ class Card:
     
     def __init__(self, name, strength, constitution, cost, card_type, tags, board_position=None):
         self.name = name
-        self.str = strength
-        self.con = constitution
+        self.strength = strength
+        self.constitution = constitution
         self.cost = cost
-        self.type = card_type
+        self.card_type = card_type
         self.tags = tags if tags else []
         self.board_position = board_position
         
