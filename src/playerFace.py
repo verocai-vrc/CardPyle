@@ -6,6 +6,7 @@ class playerFace:
         self.MaxHealth = MaxHealth
         self.CurrentHealth = CurrentHealth
         self.Mana = Mana
+        self.player_attack = player_attack
 
     # Metodo Receber dano
     def player_receive_damage(self, damage):

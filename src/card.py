@@ -25,7 +25,7 @@ class Card:
         
     # atacar
     def target_and_hit(self, target):
-        print(f"{self.name} attacks {target.name} for {self.str} damage.")
+        print(f"{self.name} attacks {target.name} for {self.strength} damage.")
         target.receive_damage(self.strength)
         
     # receber dano
