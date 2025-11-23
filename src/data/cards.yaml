@@ -1,0 +1,24 @@
+cards:
+  - id: goblin
+    name: Goblin
+    type: creature
+    cost: 1
+    strength: 1
+    constitution: 2
+    tags: [goblin]
+
+  - id: orc
+    name: Orc
+    type: creature
+    cost: 2
+    strength: 2
+    constitution: 3
+    tags: [orc]
+
+  - id: soldier
+    name: Soldier
+    type: creature
+    cost: 1
+    strength: 2
+    constitution: 2
+    tags: [human, soldier]
