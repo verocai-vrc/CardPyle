@@ -1,47 +1,89 @@
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, List, Optional, TYPE_CHECKING
+import uuid
+import yaml
+from pathlib import Path
+
+if TYPE_CHECKING:
+    from .player import Player
+
+class CardType(str, Enum):
+    CREATURE = "creature"
+    # futuramente: SPELL = "spell", EQUIPMENT = "equipment", etc.
+
+
+@dataclass(frozen=True)
+class CardDef:
+    """Definição estática de uma carta (vem do banco YAML)."""
+    id: str
+    name: str
+    type: CardType
+    cost: int
+    strength: int
+    constitution: int
+    tags: List[str] = field(default_factory=list)
+
+
+@dataclass
 class Card:
-    #Construtor da classe carta
-    #name: , strength: força de hit, constitution: vida base, cost: custo de ação, type: carta, feitiço, equiṕamento, terreno
-    
-    def __init__(self, name, strength, constitution, cost, card_type, tags, board_position=None):
-        self.name = name
-        self.strength = strength
-        self.constitution = constitution
-        self.cost = cost
-        self.card_type = card_type
-        self.tags = tags if tags else []
-        self.board_position = board_position
-        
-        self.board_position = None
-        self.health = constitution
-        self.owner = None
-    
-    # jogar no tabuleiro
-    def place_on_board(self, board_position, owner):
-        self.board_positiom = board_position
-        self.owner = owner
-    
-    
-        print(f"{self.name} is placed on {self.board_position}")
-        
-    # atacar
-    def target_and_hit(self, target):
-        print(f"{self.name} attacks {target.name} for {self.strength} damage.")
-        target.receive_damage(self.strength)
-        
-    # receber dano
-    def receive_damage(self, damage):
+    """Instância de carta no jogo."""
+    definition: CardDef
+    instance_id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
+    owner: Optional["Player"] = None  # definido em runtime
+    board_position: Optional[int] = None
+    health: int = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.health = self.definition.constitution
+
+    @property
+    def name(self) -> str:
+        return self.definition.name
+
+    @property
+    def cost(self) -> int:
+        return self.definition.cost
+
+    @property
+    def type(self) -> CardType:
+        return self.definition.type
+
+    @property
+    def strength(self) -> int:
+        return self.definition.strength
+
+    def receive_damage(self, damage: int) -> None:
         self.health -= damage
         if self.health <= 0:
-            self.die()
-        else:
-            print(f"{self.name} has {self.health} health left.")
-        
-    # morrer
-    def die(self):
-        print(f"{self.name} is destroied and off the board.")
-        self.board_position = None
-        self.move_to_graveyard(self)
-        
-    # mover para o cemiterio
-    def move_to_graveyard(self):
-        print(f"{self.name} is moved to the graveyard.")
+            # remoção do campo é responsabilidade do Game/Player (por enquanto só placeholder)
+            self.board_position = None
+
+
+def load_cards_db(path: str | Path) -> Dict[str, CardDef]:
+    """
+    Carrega o banco de cartas em YAML.
+    Schema por carta:
+      id, name, type, cost, strength, constitution, tags[]
+    """
+    p = Path(path)
+    data = yaml.safe_load(p.read_text(encoding="utf-8"))
+    db: Dict[str, CardDef] = {}
+    for item in data.get("cards", []):
+        cdef = CardDef(
+            id=item["id"],
+            name=item["name"],
+            type=CardType(item["type"]),
+            cost=int(item["cost"]),
+            strength=int(item["strength"]),
+            constitution=int(item["constitution"]),
+            tags=list(item.get("tags", [])),
+        )
+        db[cdef.id] = cdef
+    return db
+
+
+def instantiate(defn: CardDef, count: int = 1) -> List[Card]:
+    """Cria N instâncias de uma definição de carta."""
+    return [Card(definition=defn) for _ in range(count)]
