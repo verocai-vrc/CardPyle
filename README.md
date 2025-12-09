@@ -1,6 +1,4 @@
-# CardPyle
-
-## 1) Sinopse curta
+# 1) CardPyle
 CardPyle é um **motor de jogo de cartas** em Python focado em **simplicidade, testabilidade e evolução incremental**. 
 O projeto modela o domínio clássico (Deck/Mão/Campo/Cemitério), possui **loop de turno** enxuto (`DRAW → MAIN → END`) com **mana por turno**, e carrega **cartas/decks a partir de arquivos YAML**, mantendo a engine desacoplada de qualquer UI. Ideal para prototipar regras e iterar rapidamente.
 
